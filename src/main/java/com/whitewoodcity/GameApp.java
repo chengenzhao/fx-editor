@@ -5,6 +5,7 @@ import com.almasb.fxgl.app.GameSettings;
 import com.almasb.fxgl.dsl.FXGL;
 import com.almasb.fxgl.entity.Entity;
 import com.whitewoodcity.fxgl.service.AbstractGameScene;
+import com.whitewoodcity.node.EditableRectangle;
 import javafx.scene.Cursor;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -15,6 +16,8 @@ public class GameApp extends GameApplication {
   double WIDTH = AbstractGameScene.calculateScreenWidth();
 
   Entity entity;
+
+  private EditableRectangle currentRect = null;
 
   @Override
   protected void initSettings(GameSettings settings) {
