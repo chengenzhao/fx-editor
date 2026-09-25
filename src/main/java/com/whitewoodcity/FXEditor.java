@@ -24,4 +24,9 @@ public class FXEditor extends Application {
 
     stage.show();
   }
+
+  static void main(String... args) {
+    System.setProperty("prism.lcdtext", "false");
+    FXEditor.launch(FXEditor.class, args);
+  }
 }
