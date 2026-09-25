@@ -1,0 +1,2 @@
+open module fx.editor {
+}
