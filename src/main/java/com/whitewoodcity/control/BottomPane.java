@@ -6,6 +6,7 @@ import com.whitewoodcity.javafx.jvg.JVG;
 import com.whitewoodcity.javafx.jvg.JVGLayer;
 import com.whitewoodcity.javafx.jvg.JVGPath;
 import com.whitewoodcity.javafx.jvg.JVGRectangle;
+import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -50,6 +51,7 @@ public class BottomPane extends Pane {
     var jvgs = FXGL.<GameApp>getAppCast().getRectBiMap().values();
     var topleft = new Point2D(0,0);
     var bottomRight = new Point2D(0,0);
+    var delta = new Dimension2D(0,0);
     for(var rect:jvgs){
       var node = rect.getNode();
       if(node instanceof JVG jvg){
@@ -67,6 +69,14 @@ public class BottomPane extends Pane {
         if(xy.getY() + d.getHeight() > bottomRight.getY()){
           bottomRight = new Point2D(bottomRight.getX(), xy.getY() + d.getHeight());
         }
+        //calculate delta x&y
+        var img = jvg.snapshot();
+        if(Math.abs(img.getWidth() - d.getWidth()) > delta.getWidth()){
+          delta = new Dimension2D(Math.abs(img.getWidth() - d.getWidth()), delta.getHeight());
+        }
+        if(Math.abs(img.getHeight() - d.getHeight()) > delta.getHeight()){
+          delta = new Dimension2D(delta.getWidth(), Math.abs(img.getHeight() - d.getHeight()));
+        }
       }
     }
 
@@ -75,10 +85,10 @@ public class BottomPane extends Pane {
     jvgl.setFill(Color.TRANSPARENT);
     jvgl.setStroke(Color.TRANSPARENT);
 
-    jvgl.setX(topleft.getX());
-    jvgl.setY(topleft.getY());
-    jvgl.setWidth(bottomRight.getX() - topleft.getX());
-    jvgl.setHeight(bottomRight.getY() - topleft.getY());
+    jvgl.setX(topleft.getX() - delta.getWidth());
+    jvgl.setY(topleft.getY() - delta.getHeight());
+    jvgl.setWidth(bottomRight.getX() - topleft.getX() + delta.getWidth()*2);
+    jvgl.setHeight(bottomRight.getY() - topleft.getY() + delta.getHeight()*2);
 
     return jvgl;
   }
