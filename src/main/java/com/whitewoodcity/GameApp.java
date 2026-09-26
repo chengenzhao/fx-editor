@@ -58,6 +58,14 @@ public class GameApp extends GameApplication {
   }
 
   public void clear(){
+//    FXEditor.getFXEditor().bottomPane.clearTransition();
+    for(var v:entity.getViewComponent().getChildren()){
+      var rect = EditableRectangle.getRectByNode(v);
+      if(rect==null) continue;
+      deSelectRect(rect);
+      entity.getViewComponent().removeDevChild(rect);
+    }
+    entity.getViewComponent().clearChildren();
   }
 
   public BiMap<TreeItem<Node>, EditableRectangle> getRectBiMap() {
