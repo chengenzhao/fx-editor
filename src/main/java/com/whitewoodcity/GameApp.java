@@ -80,6 +80,7 @@ public class GameApp extends GameApplication {
 
     rect.getStrokeDashArray().clear();
     rect.setStroke(Color.web("#039ED3"));
+    rect.getNode().setOpacity(1);
 
     rect.setOnMousePressed(e -> {
       switch (e.getButton()){
@@ -119,6 +120,7 @@ public class GameApp extends GameApplication {
     currentRect = null;
     if(rect == null) return;
     rect.setStroke(null);
+    rect.getNode().setOpacity(.25);
     rect.setOnMouseDragged(null);
     rect.setOnMousePressed(_ -> selectRect(rect));
   }

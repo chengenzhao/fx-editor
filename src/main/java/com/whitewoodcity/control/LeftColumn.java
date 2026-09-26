@@ -26,13 +26,13 @@ public class LeftColumn extends VBox {
     treeView.setShowRoot(false);
 
     treeView.getSelectionModel().selectedItemProperty().addListener((_, old, newV) -> {
-//      var map = FXEditor.getFXEditor().bottomPane.currentFrame.getRectBiMap();
-//      if (old != null) {
-//        FXGL.<GameApp>getAppCast().deSelectRect(map.get(old));
-//      }
-//      if (newV != null) {
-//        FXGL.<GameApp>getAppCast().selectRect(map.get(newV));
-//      }
+      var map = FXGL.<GameApp>getAppCast().getRectBiMap();
+      if (old != null) {
+        FXGL.<GameApp>getAppCast().deSelectRect(map.get(old));
+      }
+      if (newV != null) {
+        FXGL.<GameApp>getAppCast().selectRect(map.get(newV));
+      }
     });
   }
 
@@ -89,15 +89,13 @@ public class LeftColumn extends VBox {
       }
 
       treeView.getRoot().getChildren().remove(treeItem);
-//      var rect = FXEditor.getFXEditor().bottomPane.delete(treeItem);
-//      FXGL.<GameApp>getAppCast().delete(rect);
 
       FXGL.<GameApp>getAppCast().update();
     });
     del.setId(DELETE_BUTTON_PREFIX + Math.random());
 
     visible.selectedProperty().addListener((_,_,v)->{
-//        FXEditor.getFXEditor().bottomPane.keyFrames.forEach(f -> f.getRectBiMap().get(treeItem).getNode().setVisible(v))
+        FXGL.<GameApp>getAppCast().getRectBiMap().get(treeItem).getNode().setVisible(v);
     });
 
     up.setOnAction(_ -> {

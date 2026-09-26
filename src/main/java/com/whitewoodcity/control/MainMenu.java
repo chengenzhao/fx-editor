@@ -105,8 +105,10 @@ public class MainMenu extends MenuBar {
       case String json -> new JVG(json).trim();
       default -> null;
     };
-    if (node != null)
+    if (node != null) {
+      node.setOpacity(.25);
       FXGL.<GameApp>getAppCast().getRectBiMap().put(item, createRect(node));
+    }
     FXGL.<GameApp>getAppCast().update();
   }
 
