@@ -39,15 +39,13 @@ public class MainMenu extends MenuBar {
     load.setOnAction(_ -> {
       var fileChooser = new FileChooser();
       fileChooser.setTitle("What file would you like to load?");
-      fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jvg & bitmap files", "*.jvg", "*.ajvg", "*.png", "*.jpg", "*.gif"));
+      fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jvg files", "*.jvg"));
       var window = this.getScene().getWindow();
       var files = fileChooser.showOpenMultipleDialog(window);
       for(var file:files){
         if (file != null) {
           try {
             switch (file.getName()) {
-              case String s when s.toLowerCase().endsWith(".frms") -> {
-              }
               case String s when s.toLowerCase().endsWith(".jvg") -> {
                 var jsonString = Files.readString(Paths.get(file.getPath()));
                 buildItem(file.getName(), jsonString);
