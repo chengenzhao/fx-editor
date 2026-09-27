@@ -6,11 +6,13 @@ import com.whitewoodcity.fxgl.transition.Frames;
 import com.whitewoodcity.javafx.jvg.JVG;
 import com.whitewoodcity.javafx.jvg.JVGLayer;
 import com.whitewoodcity.javafx.jvg.JVGRectangle;
+import com.whitewoodcity.node.NumberField;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -22,6 +24,7 @@ public class BottomPane extends Pane {
   HBox hBox = new HBox();
 
   private Frames frames;
+  private NumberField durationTime = new NumberField(10);
 
   public BottomPane() {
 
@@ -29,7 +32,10 @@ public class BottomPane extends Pane {
     var playButton = new Button("play");
     var stopButton = new Button("stop");
 
-    hBox.getChildren().addAll(loopButton, playButton, stopButton);
+    durationTime.setText("1.0");
+
+    hBox.getChildren().addAll(new Label("Duration time in seconds:"),durationTime,
+        loopButton, playButton, stopButton);
 
     hBox.setAlignment(Pos.BASELINE_CENTER);
 
@@ -64,7 +70,7 @@ public class BottomPane extends Pane {
     var entity = FXGL.<GameApp>getAppCast().getEntity();
     FXGL.<GameApp>getAppCast().clear();
     entity.getViewComponent().addChild(imageview);
-    frames = new Frames(imageview, imgs, 1.0 / imgs.length);
+    frames = new Frames(imageview, imgs, durationTime.getDouble() / imgs.length);
     return frames;
   }
 

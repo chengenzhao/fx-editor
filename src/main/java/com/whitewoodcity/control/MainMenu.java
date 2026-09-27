@@ -41,21 +41,23 @@ public class MainMenu extends MenuBar {
       fileChooser.setTitle("What file would you like to load?");
       fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jvg & bitmap files", "*.jvg", "*.ajvg", "*.png", "*.jpg", "*.gif"));
       var window = this.getScene().getWindow();
-      var file = fileChooser.showOpenDialog(window);
-      if (file != null) {
-        try {
-          switch (file.getName()) {
-            case String s when s.toLowerCase().endsWith(".frms") -> {
+      var files = fileChooser.showOpenMultipleDialog(window);
+      for(var file:files){
+        if (file != null) {
+          try {
+            switch (file.getName()) {
+              case String s when s.toLowerCase().endsWith(".frms") -> {
+              }
+              case String s when s.toLowerCase().endsWith(".jvg") -> {
+                var jsonString = Files.readString(Paths.get(file.getPath()));
+                buildItem(file.getName(), jsonString);
+              }
+              default -> {
+              }
             }
-            case String s when s.toLowerCase().endsWith(".jvg") -> {
-              var jsonString = Files.readString(Paths.get(file.getPath()));
-              buildItem(file.getName(), jsonString);
-            }
-            default -> {
-            }
+          } catch (IOException e) {
+            throw new RuntimeException(e);
           }
-        } catch (IOException e) {
-          throw new RuntimeException(e);
         }
       }
     });
