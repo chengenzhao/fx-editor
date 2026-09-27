@@ -143,4 +143,8 @@ public class GameApp extends GameApplication {
     entity.getViewComponent().removeDevChild(rect);
     entity.getViewComponent().removeChild(rect.getNode());
   }
+
+  public Entity getEntity() {
+    return entity;
+  }
 }
