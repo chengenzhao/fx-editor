@@ -89,6 +89,8 @@ public class LeftColumn extends VBox {
       }
 
       treeView.getRoot().getChildren().remove(treeItem);
+      var rect = FXGL.<GameApp>getAppCast().getRectBiMap().remove(treeItem);
+      FXGL.<GameApp>getAppCast().delete(rect);
 
       FXGL.<GameApp>getAppCast().update();
     });

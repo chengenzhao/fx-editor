@@ -138,4 +138,9 @@ public class GameApp extends GameApplication {
     rect.setOnMouseDragged(null);
     rect.setOnMousePressed(_ -> selectRect(rect));
   }
+
+  public void delete(EditableRectangle rect){
+    entity.getViewComponent().removeDevChild(rect);
+    entity.getViewComponent().removeChild(rect.getNode());
+  }
 }
