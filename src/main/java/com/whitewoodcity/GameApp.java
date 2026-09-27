@@ -14,6 +14,7 @@ import javafx.scene.Node;
 import javafx.scene.control.TreeItem;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 
 public class GameApp extends GameApplication {
 
@@ -22,6 +23,8 @@ public class GameApp extends GameApplication {
 
   Entity entity;
 
+  private final Rectangle borders = new Rectangle();
+
   private final BiMap<TreeItem<Node>, EditableRectangle> rectBiMap = HashBiMap.create();
   private EditableRectangle currentRect = null;
 
@@ -29,6 +32,15 @@ public class GameApp extends GameApplication {
   protected void initSettings(GameSettings settings) {
     settings.setHeight((int) HEIGHT);
     settings.setWidth((int) WIDTH);
+    borders.setStroke(Color.RED);
+    borders.setStrokeWidth(1);
+    borders.setFill(Color.TRANSPARENT);
+    borders.setWidth(200);
+    borders.setHeight(200);
+  }
+
+  public Rectangle getBorders() {
+    return borders;
   }
 
   @Override
@@ -38,8 +50,9 @@ public class GameApp extends GameApplication {
     var redDot = new Circle(3);
     redDot.setFill(Color.RED);
     entity.getViewComponent().addDevChild(redDot);
+    entity.getViewComponent().addDevChild(borders);
     entity.setX(WIDTH /4);
-    entity.setY(HEIGHT /4);
+    entity.setY(HEIGHT /10);
   }
 
   @Override
@@ -55,6 +68,7 @@ public class GameApp extends GameApplication {
       entity.getViewComponent().addDevChild(rect);
       rect.setOnMousePressed(_ -> selectRect(rect));
     }
+    FXEditor.getFXEditor().rightColumn.update();
   }
 
   public void clear(){

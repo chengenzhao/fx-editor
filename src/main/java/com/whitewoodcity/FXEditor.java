@@ -3,6 +3,7 @@ package com.whitewoodcity;
 import com.whitewoodcity.control.BottomPane;
 import com.whitewoodcity.control.LeftColumn;
 import com.whitewoodcity.control.MainMenu;
+import com.whitewoodcity.control.RightColumn;
 import com.whitewoodcity.javafx.jvg.JVGLayer;
 import com.whitewoodcity.javafx.jvg.JVGPath;
 import javafx.animation.Transition;
@@ -21,6 +22,7 @@ public class FXEditor extends Application {
   public MainMenu mainMenu = new MainMenu();
   public LeftColumn leftColumn = new LeftColumn();
   public BottomPane bottomPane = new BottomPane();
+  public RightColumn rightColumn = new RightColumn();
 
   private static FXEditor editorApp;
 
@@ -41,7 +43,7 @@ public class FXEditor extends Application {
     var vbox = new VBox();
     var border = new BorderPane();
     border.setCenter(gamePane);
-//    border.setRight(new ScrollPane(rightColumn));
+    border.setRight(new ScrollPane(rightColumn));
     border.setLeft(leftColumn);
     border.setBottom(bottomPane);
     vbox.getChildren().addAll(mainMenu, border);

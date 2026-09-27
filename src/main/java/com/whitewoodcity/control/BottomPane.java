@@ -4,7 +4,6 @@ import com.almasb.fxgl.dsl.FXGL;
 import com.whitewoodcity.GameApp;
 import com.whitewoodcity.javafx.jvg.JVG;
 import com.whitewoodcity.javafx.jvg.JVGLayer;
-import com.whitewoodcity.javafx.jvg.JVGPath;
 import com.whitewoodcity.javafx.jvg.JVGRectangle;
 import javafx.geometry.Dimension2D;
 import javafx.geometry.Point2D;
@@ -33,17 +32,31 @@ public class BottomPane extends Pane {
     this.getChildren().addAll(hBox);
 
     playButton.setOnAction(_->{
-      var jvgLayer = getRectangle();
       var jvgs = FXGL.<GameApp>getAppCast().getRectBiMap().values();
 
       for(var rect:jvgs){
         var node = rect.getNode();
         if(node instanceof JVG jvg){
-          jvg.getChildren().add((Node)jvgLayer);
+          jvg.getChildren().add((Node)generateBordersRectangle(jvg));
           IO.println(jvg.toJson());
         }
       }
     });
+  }
+
+  public JVGLayer generateBordersRectangle(JVG jvg){
+    var rect = FXGL.<GameApp>getAppCast().getBorders();
+
+    var jvgl = new JVGRectangle();
+    jvgl.setStrokeWidth(0);
+    jvgl.setFill(Color.TRANSPARENT);
+    jvgl.setStroke(Color.TRANSPARENT);
+
+    jvgl.setX(rect.getX());
+    jvgl.setY(rect.getY());
+    jvgl.setWidth(rect.getWidth());
+    jvgl.setHeight(rect.getHeight());
+    return jvgl;
   }
 
   public JVGLayer getRectangle(){
