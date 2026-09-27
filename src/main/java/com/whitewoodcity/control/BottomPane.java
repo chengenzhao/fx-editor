@@ -43,6 +43,7 @@ public class BottomPane extends Pane {
       if (frames != null) {
         frames.stop();
       }
+      FXGL.<GameApp>getAppCast().update();
     });
   }
 
