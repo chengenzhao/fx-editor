@@ -26,7 +26,7 @@ public class MainMenu extends MenuBar {
   public static final String INHERITANCE = "inheritance";
 
   public MainMenu() {
-    fileMenu.getItems().addAll(save, load);
+    fileMenu.getItems().addAll(load);//save,
     this.getMenus().addAll(fileMenu);
 
     load.setOnAction(_ -> {

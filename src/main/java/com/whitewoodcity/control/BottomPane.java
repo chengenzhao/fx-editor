@@ -1,6 +1,7 @@
 package com.whitewoodcity.control;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.whitewoodcity.FXEditor;
 import com.whitewoodcity.GameApp;
 import com.whitewoodcity.fxgl.transition.Frames;
 import com.whitewoodcity.javafx.jvg.JVG;
@@ -17,8 +18,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BottomPane extends Pane {
   HBox hBox = new HBox();
@@ -31,11 +40,12 @@ public class BottomPane extends Pane {
     var loopButton = new Button("loop");
     var playButton = new Button("play");
     var stopButton = new Button("stop");
+    var saveButton = new Button("save");
 
     durationTime.setText("1.0");
 
     hBox.getChildren().addAll(new Label("Duration time in seconds:"),durationTime,
-        loopButton, playButton, stopButton);
+        loopButton, playButton, stopButton, saveButton);
 
     hBox.setAlignment(Pos.BASELINE_CENTER);
 
@@ -51,27 +61,56 @@ public class BottomPane extends Pane {
       }
       FXGL.<GameApp>getAppCast().update();
     });
+    saveButton.setOnAction(_->{
+      var chooser = new FileChooser();
+      LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd|HH:mm:ss");
+      chooser.setInitialFileName(now.format(formatter));
+      var file = chooser.showSaveDialog(this.getScene().getWindow());
+      if(file!=null&&file.mkdir()){
+        for (var item : FXEditor.getFXEditor().leftColumn.getTreeItems()) {
+          var rect = FXGL.<GameApp>getAppCast().getRectBiMap().get(item);
+          if (rect.getNode() instanceof JVG jvg) {
+            try {
+              jvg = generateJVG(jvg);
+              Files.write(Paths.get(file.getAbsolutePath(), FXEditor.getFXEditor().leftColumn.getText(item)), jvg.toJsonString().getBytes());
+            } catch (IOException e) {
+              throw new RuntimeException(e);
+            }
+          }
+        }
+      }
+    });
   }
 
   public Frames generateFrames() {
-    var jvgs = FXGL.<GameApp>getAppCast().getRectBiMap().values();
-
-    var copies = new ArrayList<JVG>();
-    for (var rect : jvgs) {
-      var node = rect.getNode();
-      if (node instanceof JVG jvg) {
-        var copy = jvg.copy();
-        copy.getChildren().add((Node) generateBordersRectangle());
-        copies.add(copy);
-      }
-    }
-    var imgs = Frames.toImages(copies);
+    var jvgs = generateJVGs();
+    var imgs = Frames.toImages(jvgs);
     var imageview = new ImageView();
     var entity = FXGL.<GameApp>getAppCast().getEntity();
     FXGL.<GameApp>getAppCast().clear();
     entity.getViewComponent().addChild(imageview);
     frames = new Frames(imageview, imgs, durationTime.getDouble() / imgs.length);
     return frames;
+  }
+
+  public List<JVG> generateJVGs(){
+    var jvgs = FXGL.<GameApp>getAppCast().getRectBiMap().values();
+
+    var copies = new ArrayList<JVG>();
+    for (var rect : jvgs) {
+      var node = rect.getNode();
+      if (node instanceof JVG jvg) {
+        copies.add(generateJVG(jvg));
+      }
+    }
+    return copies;
+  }
+
+  public JVG generateJVG(JVG jvg){
+    var copy = jvg.copy();
+    copy.getChildren().add((Node) generateBordersRectangle());
+    return copy;
   }
 
   public JVGLayer generateBordersRectangle() {
@@ -89,50 +128,5 @@ public class BottomPane extends Pane {
     return jvgl;
   }
 
-  public JVGLayer getRectangle() {
 
-    var jvgs = FXGL.<GameApp>getAppCast().getRectBiMap().values();
-    var topleft = new Point2D(0, 0);
-    var bottomRight = new Point2D(0, 0);
-    var delta = new Dimension2D(0, 0);
-    for (var rect : jvgs) {
-      var node = rect.getNode();
-      if (node instanceof JVG jvg) {
-        var xy = jvg.getXY();
-        if (xy.getX() < topleft.getX()) {
-          topleft = new Point2D(xy.getX(), topleft.getY());
-        }
-        if (xy.getY() < topleft.getY()) {
-          topleft = new Point2D(topleft.getX(), xy.getY());
-        }
-        var d = jvg.getDimension();
-        if (xy.getX() + d.getWidth() > bottomRight.getX()) {
-          bottomRight = new Point2D(xy.getX() + d.getWidth(), bottomRight.getY());
-        }
-        if (xy.getY() + d.getHeight() > bottomRight.getY()) {
-          bottomRight = new Point2D(bottomRight.getX(), xy.getY() + d.getHeight());
-        }
-        //calculate delta x&y
-        var img = jvg.snapshot();
-        if (Math.abs(img.getWidth() - d.getWidth()) > delta.getWidth()) {
-          delta = new Dimension2D(Math.abs(img.getWidth() - d.getWidth()), delta.getHeight());
-        }
-        if (Math.abs(img.getHeight() - d.getHeight()) > delta.getHeight()) {
-          delta = new Dimension2D(delta.getWidth(), Math.abs(img.getHeight() - d.getHeight()));
-        }
-      }
-    }
-
-    var jvgl = new JVGRectangle();
-    jvgl.setStrokeWidth(0);
-    jvgl.setFill(Color.TRANSPARENT);
-    jvgl.setStroke(Color.TRANSPARENT);
-
-    jvgl.setX(topleft.getX() - delta.getWidth());
-    jvgl.setY(topleft.getY() - delta.getHeight());
-    jvgl.setWidth(bottomRight.getX() - topleft.getX() + delta.getWidth() * 2);
-    jvgl.setHeight(bottomRight.getY() - topleft.getY() + delta.getHeight() * 2);
-
-    return jvgl;
-  }
 }
