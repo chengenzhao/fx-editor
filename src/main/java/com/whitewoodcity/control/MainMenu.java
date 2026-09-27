@@ -17,12 +17,6 @@ public class MainMenu extends MenuBar {
   Menu fileMenu = new Menu("Files");
   MenuItem save = new MenuItem("Save");
   MenuItem load = new MenuItem("Load");
-  MenuItem clear = new MenuItem("Clear");
-  MenuItem clearBitmap = new MenuItem("Clear bitmaps ");
-
-  Menu settingMenu = new Menu("Settings");
-  MenuItem globalSetting = new MenuItem("Dev Setting");
-  MenuItem solid = new MenuItem("Solid");
 
   public static final String DELETE_BUTTON_PREFIX = "deleteButton";
   public static final String NAME = "name";
@@ -32,9 +26,8 @@ public class MainMenu extends MenuBar {
   public static final String INHERITANCE = "inheritance";
 
   public MainMenu() {
-    fileMenu.getItems().addAll(save, load, clear, clearBitmap);
-    settingMenu.getItems().addAll(globalSetting, solid);
-    this.getMenus().addAll(fileMenu, settingMenu);
+    fileMenu.getItems().addAll(save, load);
+    this.getMenus().addAll(fileMenu);
 
     load.setOnAction(_ -> {
       var fileChooser = new FileChooser();
@@ -42,8 +35,8 @@ public class MainMenu extends MenuBar {
       fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("jvg files", "*.jvg"));
       var window = this.getScene().getWindow();
       var files = fileChooser.showOpenMultipleDialog(window);
-      for(var file:files){
-        if (file != null) {
+      if (files != null) {
+        for(var file:files){
           try {
             switch (file.getName()) {
               case String s when s.toLowerCase().endsWith(".jvg") -> {
@@ -60,11 +53,7 @@ public class MainMenu extends MenuBar {
       }
     });
 
-    clear.setOnAction(_ -> clear());
-    clearBitmap.setOnAction(_ -> clearBitmap());
-
     save.setOnAction(_ -> {
-      clearBitmap();
       var fileChooser = new FileChooser();
       fileChooser.setTitle("What file would you like to save?");
       fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("ajvg files", "*.ajvg"));
@@ -79,20 +68,6 @@ public class MainMenu extends MenuBar {
         Files.write(Paths.get(file.getPath()), json.toString().getBytes());
       } catch (IOException e) {
         throw new RuntimeException(e);
-      }
-    });
-
-    globalSetting.setOnAction(_ -> {
-//      FXGL.<GameApp>getAppCast().globalSettingStage.show();
-    });
-
-    solid.setOnAction(_ -> {
-      for (var item : FXEditor.getFXEditor().leftColumn.getTreeItems()) {
-//        FXEditor.getFXEditor().bottomPane.keyFrames.stream()
-//            .map(kf -> kf.getRectBiMap().get(item).getNode())
-//            .filter(n -> n instanceof JVG)
-//            .map(JVG.class::cast)
-//            .forEach(JVG::solid);
       }
     });
   }
@@ -133,35 +108,6 @@ public class MainMenu extends MenuBar {
     }
 
     return arrayNode;
-  }
-
-  public void clear() {
-    var editor = FXEditor.getFXEditor();
-    var list = new ArrayList<Button>();
-
-//    var stream0 = editor.bottomPane.getChildren().stream();
-    var stream1 = editor.leftColumn.getTreeItems().stream().map(TreeItem::getValue)
-        .filter(HBox.class::isInstance).map(HBox.class::cast)
-        .flatMap(e -> e.getChildren().stream());
-
-//    Stream.concat(stream0, stream1)
-//        .filter(Button.class::isInstance).map(Button.class::cast)
-//        .filter(b -> b.getId() != null & b.getId().startsWith(DELETE_BUTTON_PREFIX))
-//        .forEach(list::add);
-
-    list.forEach(Button::fire);
-  }
-
-  public void clearBitmap() {
-    var editor = FXEditor.getFXEditor();
-    var list = new ArrayList<Button>();
-//    editor.leftColumn.getTreeItems().stream().filter(item -> editor.bottomPane.keyFrames.getFirst().getRectBiMap().get(item).getNode() instanceof ImageView)
-//        .map(TreeItem::getValue)
-//        .filter(HBox.class::isInstance).map(HBox.class::cast)
-//        .flatMap(e -> e.getChildren().stream()).filter(Button.class::isInstance).map(Button.class::cast)
-//        .filter(b -> b.getId() != null & b.getId().startsWith(DELETE_BUTTON_PREFIX))
-//        .forEach(list::add);
-    list.forEach(Button::fire);
   }
 
   public EditableRectangle createRect(Node node) {
