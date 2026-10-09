@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -90,7 +91,7 @@ public class BottomPane extends Pane {
     var entity = FXGL.<GameApp>getAppCast().getEntity();
     FXGL.<GameApp>getAppCast().clear();
     entity.getViewComponent().addChild(imageview);
-    frames = new Frames(imageview, imgs, durationTime.getDouble() / imgs.length);
+    frames = new Frames(imageview, imgs, Duration.seconds(durationTime.getDouble()));
     return frames;
   }
 
