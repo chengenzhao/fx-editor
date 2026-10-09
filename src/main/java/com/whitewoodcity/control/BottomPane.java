@@ -1,6 +1,8 @@
 package com.whitewoodcity.control;
 
 import com.almasb.fxgl.dsl.FXGL;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.whitewoodcity.FXEditor;
 import com.whitewoodcity.GameApp;
 import com.whitewoodcity.fxgl.transition.Frames;
@@ -8,8 +10,6 @@ import com.whitewoodcity.javafx.jvg.JVG;
 import com.whitewoodcity.javafx.jvg.JVGLayer;
 import com.whitewoodcity.javafx.jvg.JVGRectangle;
 import com.whitewoodcity.node.NumberField;
-import javafx.geometry.Dimension2D;
-import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -45,7 +45,7 @@ public class BottomPane extends Pane {
 
     durationTime.setText("1.0");
 
-    hBox.getChildren().addAll(new Label("Duration time in seconds:"),durationTime,
+    hBox.getChildren().addAll(new Label("Duration time in seconds:"), durationTime,
         loopButton, playButton, stopButton, saveButton);
 
     hBox.setAlignment(Pos.BASELINE_CENTER);
@@ -62,24 +62,31 @@ public class BottomPane extends Pane {
       }
       FXGL.<GameApp>getAppCast().update();
     });
-    saveButton.setOnAction(_->{
+    saveButton.setOnAction(_ -> {
       var chooser = new FileChooser();
       LocalDateTime now = LocalDateTime.now(ZoneId.systemDefault());
       DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd|HH:mm:ss");
       chooser.setInitialFileName(now.format(formatter));
       var file = chooser.showSaveDialog(this.getScene().getWindow());
-      if(file!=null&&file.mkdir()){
-        for (var item : FXEditor.getFXEditor().leftColumn.getTreeItems()) {
-          var rect = FXGL.<GameApp>getAppCast().getRectBiMap().get(item);
-          if (rect.getNode() instanceof JVG jvg) {
-            try {
+      try {
+        if (file != null && file.mkdir()) {
+          var mapper = new ObjectMapper();
+          ArrayNode json = mapper.createArrayNode();
+          for (var item : FXEditor.getFXEditor().leftColumn.getTreeItems()) {
+            var rect = FXGL.<GameApp>getAppCast().getRectBiMap().get(item);
+            if (rect.getNode() instanceof JVG jvg) {
               jvg = generateJVG(jvg);
               Files.write(Paths.get(file.getAbsolutePath(), FXEditor.getFXEditor().leftColumn.getText(item)), jvg.toJsonString().getBytes());
-            } catch (IOException e) {
-              throw new RuntimeException(e);
+              json.add(jvg.toJson());
             }
           }
+
+          var item0 = FXEditor.getFXEditor().leftColumn.getTreeItems().getFirst();
+          var jvgsName = FXEditor.getFXEditor().leftColumn.getText(item0);
+          Files.write(Paths.get(file.getAbsolutePath(), jvgsName.substring(0, jvgsName.length() - 5) + ".jvgs"), json.toString().getBytes());
         }
+      } catch (IOException e) {
+        throw new RuntimeException(e);
       }
     });
   }
@@ -95,7 +102,7 @@ public class BottomPane extends Pane {
     return frames;
   }
 
-  public List<JVG> generateJVGs(){
+  public List<JVG> generateJVGs() {
     var jvgs = FXGL.<GameApp>getAppCast().getRectBiMap().values();
 
     var copies = new ArrayList<JVG>();
@@ -108,7 +115,7 @@ public class BottomPane extends Pane {
     return copies;
   }
 
-  public JVG generateJVG(JVG jvg){
+  public JVG generateJVG(JVG jvg) {
     var copy = jvg.copy();
     copy.getChildren().add((Node) generateBordersRectangle());
     return copy;

@@ -5,4 +5,6 @@ open module fx.editor {
   requires com.almasb.fxgl.all;
   requires com.google.common;
   requires io.vertx.core;
+  requires tools.jackson.databind;
+  requires com.fasterxml.jackson.databind;
 }
