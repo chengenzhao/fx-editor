@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.whitewoodcity.FXEditor;
 import com.whitewoodcity.GameApp;
+import com.whitewoodcity.fxgl.transition.FrameJsonKeys;
 import com.whitewoodcity.fxgl.transition.Frames;
 import com.whitewoodcity.javafx.jvg.JVG;
 import com.whitewoodcity.javafx.jvg.JVGLayer;
@@ -34,7 +35,7 @@ public class BottomPane extends Pane {
   HBox hBox = new HBox();
 
   private Frames frames;
-  private NumberField durationTime = new NumberField(10);
+  private final NumberField durationTime = new NumberField(10);
 
   public BottomPane() {
 
@@ -83,7 +84,13 @@ public class BottomPane extends Pane {
 
           var item0 = FXEditor.getFXEditor().leftColumn.getTreeItems().getFirst();
           var jvgsName = FXEditor.getFXEditor().leftColumn.getText(item0);
-          Files.write(Paths.get(file.getAbsolutePath(), jvgsName.substring(0, jvgsName.length() - 5) + ".jvgs"), json.toString().getBytes());
+          String name = jvgsName.substring(0, jvgsName.length() - 5);
+          Files.write(Paths.get(file.getAbsolutePath(), name + ".jvgs"), json.toString().getBytes());
+
+          var duration = durationTime.getDouble();
+          var aniJson = mapper.createObjectNode();
+          aniJson.put(FrameJsonKeys.DURATION.key(), duration);
+          Files.write(Paths.get(file.getAbsolutePath(), name + ".ani"), aniJson.toString().getBytes());
         }
       } catch (IOException e) {
         throw new RuntimeException(e);
